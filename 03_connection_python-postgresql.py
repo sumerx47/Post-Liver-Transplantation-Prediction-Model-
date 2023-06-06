@@ -7,7 +7,7 @@ conn = psycopg2.connect(
     port="5432",
     database="postgres",
     user="postgres",
-    password="Sumer&123"
+    password="your password"
 )
 
 # Create a cursor object to interact with the database
