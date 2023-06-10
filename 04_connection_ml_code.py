@@ -92,13 +92,11 @@ for column in X.select_dtypes(include='object').columns:
     X[column] = label_encoder.fit_transform(X[column])
 
 # Perform standardization of numerical columns
-scaler = StandardScaler()
-X[X.select_dtypes(include=['int64', 'float64']).columns] = scaler.fit_transform(X.select_dtypes(include=['int64', 'float64']))
+#scaler = StandardScaler()
+#X[X.select_dtypes(include=['int64', 'float64']).columns] = scaler.fit_transform(X.select_dtypes(include=['int64', 'float64']))
 
 # Split the data into train and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-
 
 
 # Define a dictionary to store the model accuracies
