@@ -236,7 +236,6 @@ sns.pairplot(df)
 df.corr()
 
 
-
 # Check for missing/Null values
 df.isnull().sum()
 
@@ -256,127 +255,108 @@ df[numerical_cols] = imputer.fit_transform(df[numerical_cols])
 for col in categorical_cols:
     df[col].fillna(df[col].mode()[0], inplace=True)
 
-
 X = df.drop('complications', axis=1)
 Y = df['complications']
-    
+
 # Perform label encoding for categorical columns
 label_encoder = LabelEncoder()
 for column in X.select_dtypes(include='object').columns:
     X[column] = label_encoder.fit_transform(X[column])
 Y = label_encoder.fit_transform(Y)
 
-
-# Split the data into train and test sets
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
+# Split the data into train, validation, and test sets
+X_trainval, X_test, y_trainval, y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=42)
 
 # Define a dictionary to store the model accuracies
 model_accuracies = {}
 
-
 # Train and evaluate Decision Tree Classifier
 dt_classifier = DecisionTreeClassifier()
-dt_classifier.fit(X_train, Y_train)
+dt_classifier.fit(X_train, y_train)
 dt_pred = dt_classifier.predict(X_test)
-dt_accuracy = accuracy_score(Y_test, dt_pred)
+dt_accuracy = accuracy_score(y_test, dt_pred)
 model_accuracies['Decision Tree'] = dt_accuracy
 
 # Train and evaluate Logistic Regression
 lr_classifier = LogisticRegression()
-lr_classifier.fit(X_train, Y_train)
+lr_classifier.fit(X_train, y_train)
 lr_pred = lr_classifier.predict(X_test)
-lr_accuracy = accuracy_score(Y_test, lr_pred)
+lr_accuracy = accuracy_score(y_test, lr_pred)
 model_accuracies['Logistic Regression'] = lr_accuracy
 
 # Train and evaluate Random Forest Classifier
 rf_classifier = RandomForestClassifier()
-rf_classifier.fit(X_train, Y_train)
+rf_classifier.fit(X_train, y_train)
 rf_pred = rf_classifier.predict(X_test)
-rf_accuracy = accuracy_score(Y_test, rf_pred)
+rf_accuracy = accuracy_score(y_test, rf_pred)
 model_accuracies['Random Forest'] = rf_accuracy
 
 # Train and evaluate Support Vector Classifier
 svm_classifier = SVC()
-svm_classifier.fit(X_train, Y_train)
+svm_classifier.fit(X_train, y_train)
 svm_pred = svm_classifier.predict(X_test)
-svm_accuracy = accuracy_score(Y_test, svm_pred)
+svm_accuracy = accuracy_score(y_test, svm_pred)
 model_accuracies['Support Vector Machine'] = svm_accuracy
 
+#################    Blackbox techniques , Ensemble techniques
 
-#################    Blackbox techniques , Emsembled techniques
-
-#pip install xgboost
-#pip install lightgbm
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from xgboost import XGBClassifier
-#from lightgbm import LGBMClassifier
-from sklearn.ensemble import VotingClassifier
+from sklearn.model_selection import RandomizedSearchCV
 
-#Train and evaluate additional classifiers:
-#Multilayer Perceptron (Neural Network) Classifier:
+
+# Train and evaluate additional classifiers
+# Multilayer Perceptron (Neural Network) Classifier
 mlp_classifier = MLPClassifier()
-mlp_classifier.fit(X_train, Y_train)
+mlp_classifier.fit(X_train, y_train)
 mlp_pred = mlp_classifier.predict(X_test)
-mlp_accuracy = accuracy_score(Y_test, mlp_pred)
+mlp_accuracy = accuracy_score(y_test, mlp_pred)
 model_accuracies['Multilayer Perceptron'] = mlp_accuracy
 
-
-#Apply ensemble techniques:
-#AdaBoost Classifier:
+# Apply ensemble techniques
+# AdaBoost Classifier
 ada_classifier = AdaBoostClassifier()
-ada_classifier.fit(X_train, Y_train)
+ada_classifier.fit(X_train, y_train)
 ada_pred = ada_classifier.predict(X_test)
-ada_accuracy = accuracy_score(Y_test, ada_pred)
+ada_accuracy = accuracy_score(y_test, ada_pred)
 model_accuracies['AdaBoost'] = ada_accuracy
 
-#Gradient Boosting Classifier:
+# Train and evaluate Gradient Boosting Classifier
 gb_classifier = GradientBoostingClassifier()
-gb_classifier.fit(X_train, Y_train)
+gb_classifier.fit(X_train, y_train)
 gb_pred = gb_classifier.predict(X_test)
-gb_accuracy = accuracy_score(Y_test, gb_pred)
+gb_accuracy = accuracy_score(y_test, gb_pred)
 model_accuracies['Gradient Boosting'] = gb_accuracy
 
+# Apply hyperparameter tuning for Gradient Boosting Classifier
+param_grid = {'learning_rate': [0.1, 0.01], 'n_estimators': [100, 200]}
+cv_model = RandomizedSearchCV(gb_classifier, param_distributions=param_grid, cv=5, n_iter=10)
+cv_model.fit(X_train, y_train)
 
-#XGBoost Classifier:
-label_encoder = LabelEncoder()
-y_encoded = label_encoder.fit_transform(Y)
-# Split the data into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=0)
-# Rest of the code for XGBoost Classifier
-classifier = XGBClassifier()
-classifier.fit(X_train, y_train)
-xgb_pred = classifier.predict(X_test)
-xgb_accuracy = accuracy_score(y_test, xgb_pred)
-model_accuracies['XGBoost'] = xgb_accuracy
+# Evaluate the best hyperparameters on the validation set
+best_model = cv_model.best_estimator_
+y_val_pred = best_model.predict(X_val)
+val_accuracy = accuracy_score(y_val, y_val_pred)
+print("Validation Accuracy:", val_accuracy)
 
+# Evaluate the final model on the test set
+y_test_pred = best_model.predict(X_test)
+test_accuracy = accuracy_score(y_test, y_test_pred)
+print("Test Accuracy:", test_accuracy)
 
-#Voting Classifier (Combining multiple models):
-voting_classifier = VotingClassifier(
-    estimators=[('dt', dt_classifier), ('lr', lr_classifier), ('rf', rf_classifier)],
-    voting='hard'
-)
-voting_classifier.fit(X_train, y_train)
-voting_pred = voting_classifier.predict(X_test)
-voting_accuracy = accuracy_score(y_test, voting_pred)
-model_accuracies['Voting Classifier'] = voting_accuracy
-
-
-#Print the accuracies of the trained models:
+# Print the accuracies of the trained models
 for model, accuracy in model_accuracies.items():
     print(f"{model} Accuracy: {accuracy}")
 
 
 
-
-
+# Save the best model
 import pickle
-
-pickle_out=open("gb_classifier.pkl","wb")
-pickle.dump(gb_classifier,pickle_out)
+pickle_out = open("gb_classifier.pkl", "wb")
+pickle.dump(best_model, pickle_out)
 pickle_out.close()
-
 
 
 
