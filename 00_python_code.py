@@ -258,6 +258,17 @@ for col in categorical_cols:
 X = df.drop('complications', axis=1)
 Y = df['complications']
 
+#Handling outliers
+from feature_engine.outliers import Winsorizer
+# Apply winsorization to 'recipient_na' column
+winsorizer = Winsorizer(capping_method='iqr', tail='both', fold=0.05, variables=['recipient_na'])
+df = winsorizer.fit_transform(df)
+
+# Apply winsorization to 'recipient_mg' column
+winsorizer = Winsorizer(capping_method='iqr', tail='both', fold=0.05, variables=['recipient_mg'])
+df = winsorizer.fit_transform(df)
+
+
 # Perform label encoding for categorical columns
 label_encoder = LabelEncoder()
 for column in X.select_dtypes(include='object').columns:
