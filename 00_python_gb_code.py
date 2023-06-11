@@ -357,6 +357,11 @@ gb_pred = gb_classifier.predict(X_test)
 gb_accuracy = accuracy_score(y_test, gb_pred)
 model_accuracies['Gradient Boosting'] = gb_accuracy
 
+# Print the accuracies of the trained models
+for model, accuracy in model_accuracies.items():
+    print(f"{model} Accuracy: {accuracy}")
+
+    
 # Apply hyperparameter tuning for Gradient Boosting Classifier
 param_grid = {'learning_rate': [0.1, 0.01], 'n_estimators': [100, 200]}
 cv_model = RandomizedSearchCV(gb_classifier, param_distributions=param_grid, cv=5, n_iter=10)
