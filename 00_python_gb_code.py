@@ -68,6 +68,22 @@ column_mapping = {
 # Rename the columns using the column_mapping dictionary
 data = data.rename(columns=column_mapping)
 
+###########################################################
+'''
+#Auto EDA library - Sweetviz
+import sweetviz as sv
+
+report = sv.analyze(data)
+report.show_html()
+
+## Get the current working directory
+import os
+
+cwd = os.getcwd()
+print("Current Working Directory:", cwd)
+
+'''
+############################################################
 
 # Represents the information related to the dataset
 data.info()
