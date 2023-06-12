@@ -312,22 +312,9 @@ X.shape
 
 Y.shape
 
-
-
-
-
-
-
-
-
-
-
-
-
 # Split the data into train, validation, and test sets
 X_trainval, X_test, y_trainval, y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=42)
-
 
 # Define a dictionary to store the model accuracies
 model_accuracies = {}
