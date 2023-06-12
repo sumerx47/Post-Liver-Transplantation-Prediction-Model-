@@ -6,13 +6,13 @@ import pickle
 import streamlit as st
 
 pickle_in = open("gb_classifier.pkl","rb")
-gb_classifier=pickle.load(pickle_in)
+best_model=pickle.load(pickle_in)
 
 
 
 def liver_prediction(donor_age, donor_gender, donor_bmi, donor_cause_of_death, donor_diabetes, donor_hypertension, donor_alcohol_abuse, donor_smoking, donor_lymphocyte, donor_hepatitis_b, donor_hepatitis_c, recipient_etiology, recipient_meld_score, recipient_age, recipient_gender, recipient_bmi, recipient_diabetes, recipient_hypertension, recipient_alcohol_abuse, recipient_smoking, recipient_lymphocyte, recipient_hepatitis_b, recipient_hepatitis_c, recipient_albumin_level, recipient_alcoholic_cirrhosis, recipient_primary_biliary_cirrhosis, recipient_na, recipient_mg, recipient_wbc, recipient_platelets, recipient_cold_ischemia_time, recipient_warm_ischemia_time, recipient_blood_transfusion, recipient_immunosuppressant_medication, recipient_rejection_episodes):
 
-   prediction = gb_classifier.predict([[donor_age, donor_gender, donor_bmi, donor_cause_of_death, donor_diabetes, donor_hypertension, donor_alcohol_abuse, donor_smoking, donor_lymphocyte, donor_hepatitis_b, donor_hepatitis_c, recipient_etiology, recipient_meld_score, recipient_age, recipient_gender, recipient_bmi, recipient_diabetes, recipient_hypertension, recipient_alcohol_abuse, recipient_smoking, recipient_lymphocyte, recipient_hepatitis_b, recipient_hepatitis_c, recipient_albumin_level, recipient_alcoholic_cirrhosis, recipient_primary_biliary_cirrhosis, recipient_na, recipient_mg, recipient_wbc, recipient_platelets, recipient_cold_ischemia_time, recipient_warm_ischemia_time, recipient_blood_transfusion, recipient_immunosuppressant_medication, recipient_rejection_episodes]])
+   prediction = best_model.predict([[donor_age, donor_gender, donor_bmi, donor_cause_of_death, donor_diabetes, donor_hypertension, donor_alcohol_abuse, donor_smoking, donor_lymphocyte, donor_hepatitis_b, donor_hepatitis_c, recipient_etiology, recipient_meld_score, recipient_age, recipient_gender, recipient_bmi, recipient_diabetes, recipient_hypertension, recipient_alcohol_abuse, recipient_smoking, recipient_lymphocyte, recipient_hepatitis_b, recipient_hepatitis_c, recipient_albumin_level, recipient_alcoholic_cirrhosis, recipient_primary_biliary_cirrhosis, recipient_na, recipient_mg, recipient_wbc, recipient_platelets, recipient_cold_ischemia_time, recipient_warm_ischemia_time, recipient_blood_transfusion, recipient_immunosuppressant_medication, recipient_rejection_episodes]])
    print(prediction)
    return prediction
 
