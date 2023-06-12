@@ -272,25 +272,57 @@ df[numerical_cols] = imputer.fit_transform(df[numerical_cols])
 for col in categorical_cols:
     df[col].fillna(df[col].mode()[0], inplace=True)
 
-X = df.drop('complications', axis=1)
-Y = df['complications']
-
+    
 #Handling outliers
 from feature_engine.outliers import Winsorizer
 # Apply winsorization to 'recipient_na' column
 winsorizer = Winsorizer(capping_method='iqr', tail='both', fold=0.05, variables=['recipient_na'])
 df = winsorizer.fit_transform(df)
-
 # Apply winsorization to 'recipient_mg' column
 winsorizer = Winsorizer(capping_method='iqr', tail='both', fold=0.05, variables=['recipient_mg'])
 df = winsorizer.fit_transform(df)
-
+    
+    
+X_sampled = df.drop('complications', axis=1)
+Y_sampled = df['complications']
 
 # Perform label encoding for categorical columns
 label_encoder = LabelEncoder()
-for column in X.select_dtypes(include='object').columns:
-    X[column] = label_encoder.fit_transform(X[column])
-Y = label_encoder.fit_transform(Y)
+for column in X_sampled.select_dtypes(include='object').columns:
+    X_sampled[column] = label_encoder.fit_transform(X_sampled[column])
+Y_sampled = label_encoder.fit_transform(Y_sampled)
+
+
+from imblearn.over_sampling import SMOTE
+# Instantiate the SMOTE algorithm
+smote = SMOTE()
+
+# Apply SMOTE to the dataset
+X, Y = smote.fit_resample(X_sampled, Y_sampled)
+
+# Check the class distribution before SMOTE
+print("Class distribution before SMOTE:")
+print(pd.Series((Y_sampled.squeeze())).value_counts())
+
+# Check the class distribution after SMOTE
+print("Class distribution after SMOTE:")
+print(pd.Series(Y.squeeze()).value_counts())
+
+X.shape
+
+Y.shape
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Split the data into train, validation, and test sets
 X_trainval, X_test, y_trainval, y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
