@@ -208,6 +208,7 @@ for column in numeric_columns:
     plt.ylabel('Complications')
     plt.title(f'Scatter Plot of {column} vs Complications')
 
+    
 # Bar Plot for categorical columns
 categorical_columns = ['donor_gender', 'donor_cause_of_death', 'donor_diabetes', 'donor_hypertension',
                        'donor_alcohol_abuse', 'donor_smoking', 'donor_lymphocyte', 'donor_hepatitis_b',
@@ -295,6 +296,7 @@ Y = label_encoder.fit_transform(Y)
 X_trainval, X_test, y_trainval, y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=42)
 
+
 # Define a dictionary to store the model accuracies
 model_accuracies = {}
 
@@ -305,12 +307,34 @@ dt_pred = dt_classifier.predict(X_test)
 dt_accuracy = accuracy_score(y_test, dt_pred)
 model_accuracies['Decision Tree'] = dt_accuracy
 
+# Model evaluation
+confusion_mat = confusion_matrix(y_test, dt_pred)
+classification_rep = classification_report(y_test, dt_pred)
+print("Decision Tree")
+print("Confusion Matrix:")
+print(confusion_mat)
+print("Classification Report:")
+print(classification_rep)
+print("Accuracy:", dt_accuracy)
+print()
+
 # Train and evaluate Logistic Regression
 lr_classifier = LogisticRegression()
 lr_classifier.fit(X_train, y_train)
 lr_pred = lr_classifier.predict(X_test)
 lr_accuracy = accuracy_score(y_test, lr_pred)
 model_accuracies['Logistic Regression'] = lr_accuracy
+
+# Model evaluation
+confusion_mat = confusion_matrix(y_test, lr_pred)
+classification_rep = classification_report(y_test, lr_pred)
+print("Logistic Regression")
+print("Confusion Matrix:")
+print(confusion_mat)
+print("Classification Report:")
+print(classification_rep)
+print("Accuracy:", lr_accuracy)
+print()
 
 # Train and evaluate Random Forest Classifier
 rf_classifier = RandomForestClassifier()
@@ -319,6 +343,17 @@ rf_pred = rf_classifier.predict(X_test)
 rf_accuracy = accuracy_score(y_test, rf_pred)
 model_accuracies['Random Forest'] = rf_accuracy
 
+# Model evaluation
+confusion_mat = confusion_matrix(y_test, rf_pred)
+classification_rep = classification_report(y_test, rf_pred)
+print("Random Forest")
+print("Confusion Matrix:")
+print(confusion_mat)
+print("Classification Report:")
+print(classification_rep)
+print("Accuracy:", rf_accuracy)
+print()
+
 # Train and evaluate Support Vector Classifier
 svm_classifier = SVC()
 svm_classifier.fit(X_train, y_train)
@@ -326,30 +361,18 @@ svm_pred = svm_classifier.predict(X_test)
 svm_accuracy = accuracy_score(y_test, svm_pred)
 model_accuracies['Support Vector Machine'] = svm_accuracy
 
-#################    Blackbox techniques , Ensemble techniques
+# Model evaluation
+confusion_mat = confusion_matrix(y_test, svm_pred)
+classification_rep = classification_report(y_test, svm_pred)
+print("Support Vector Machine")
+print("Confusion Matrix:")
+print(confusion_mat)
+print("Classification Report:")
+print(classification_rep)
+print("Accuracy:", svm_accuracy)
+print()
 
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import RandomizedSearchCV
-
-
-# Train and evaluate additional classifiers
-# Multilayer Perceptron (Neural Network) Classifier
-mlp_classifier = MLPClassifier()
-mlp_classifier.fit(X_train, y_train)
-mlp_pred = mlp_classifier.predict(X_test)
-mlp_accuracy = accuracy_score(y_test, mlp_pred)
-model_accuracies['Multilayer Perceptron'] = mlp_accuracy
-
-# Apply ensemble techniques
-# AdaBoost Classifier
-ada_classifier = AdaBoostClassifier()
-ada_classifier.fit(X_train, y_train)
-ada_pred = ada_classifier.predict(X_test)
-ada_accuracy = accuracy_score(y_test, ada_pred)
-model_accuracies['AdaBoost'] = ada_accuracy
-
 # Train and evaluate Gradient Boosting Classifier
 gb_classifier = GradientBoostingClassifier()
 gb_classifier.fit(X_train, y_train)
@@ -357,10 +380,22 @@ gb_pred = gb_classifier.predict(X_test)
 gb_accuracy = accuracy_score(y_test, gb_pred)
 model_accuracies['Gradient Boosting'] = gb_accuracy
 
+# Model evaluation
+confusion_mat = confusion_matrix(y_test, gb_pred)
+classification_rep = classification_report(y_test, gb_pred)
+print("Gradient Boosting")
+print("Confusion Matrix:")
+print(confusion_mat)
+print("Classification Report:")
+print(classification_rep)
+print("Accuracy:", gb_accuracy)
+print()
+
+
 # Print the accuracies of the trained models
 for model, accuracy in model_accuracies.items():
     print(f"{model} Accuracy: {accuracy}")
-
+    
     
 # Apply hyperparameter tuning for Gradient Boosting Classifier
 param_grid = {'learning_rate': [0.1, 0.01], 'n_estimators': [100, 200]}
