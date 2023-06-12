@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import streamlit as st
 
-pickle_in = open("gb_classifier.pkl","rb")
+pickle_in = open("gb_classifier1.pkl","rb")
 best_model=pickle.load(pickle_in)
 
 
